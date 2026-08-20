@@ -4,9 +4,15 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gunjanghate/monolith-mastery/internal/config"
 )
 
+
 func main() {
+
+	cfg := config.MustLoad()
+
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
@@ -17,12 +23,14 @@ func main() {
 	})
 
 	server := http.Server{
-		Addr:         ":8080",
+		Addr:         ":" + cfg.Port,
 		Handler:      mux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
+
+	log.Printf("server listening on %s", server.Addr)
 
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("Error starting server: %v", err)
